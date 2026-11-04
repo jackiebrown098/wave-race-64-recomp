@@ -40,6 +40,7 @@
 #if WR64_WITH_FRONTEND
 #   include "wr64/frontend.h"
 #   include <recompinput/input_events.h>
+#   include <recompinput/profiles.h>
 #endif
 #include "wr64/display.h"
 #include "wr64/testdrive.h"
@@ -203,6 +204,13 @@ bool get_input(int controller_num, uint16_t* buttons, float* x, float* y) {
     float stick_x = 0.0f;
     float stick_y = 0.0f;
 
+    #if WR64_WITH_FRONTEND
+    if (recompinput::profiles::get_n64_input(
+            controller_num, buttons, x, y)) {
+        wr64::trace_input(controller_num, *buttons, *x, *y);
+        return true;
+    }
+    #endif
     if (g_controller != nullptr) {
         struct { SDL_GameControllerButton sdl; uint16_t n64; } map[] = {
             { SDL_CONTROLLER_BUTTON_A,             BTN_A },
